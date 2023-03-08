@@ -20,10 +20,12 @@ func AttachInstance() *gorm.DB {
 		os.Getenv("POSTGRES_DBNAME"),
 	)
 
-	Instance, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	var instanceConnectionError error
+	Instance, instanceConnectionError = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	if err != nil {
-		log.Fatal(err)
+	if instanceConnectionError != nil {
+		fmt.Println("ERROR: Couldn't connect to postgres instance")
+		log.Fatal(instanceConnectionError)
 	}
 
 	return Instance

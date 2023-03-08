@@ -4,6 +4,7 @@ import (
 	"gotodo/db"
 	"gotodo/initializers"
 	"gotodo/routes"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +23,7 @@ func main() {
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")
+	v1.GET("/", func(ctx *gin.Context) { ctx.Status(http.StatusOK) })
 
 	auth := v1.Group("/auth")
 	auth.POST("/register", routes.Register)

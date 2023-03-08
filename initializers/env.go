@@ -1,6 +1,7 @@
 package initializers
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -9,6 +10,7 @@ import (
 func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("ERROR: Could not load database .env file")
+		fmt.Println("ERROR: Couldn't load environment")
+		log.Fatal(err)
 	}
 }

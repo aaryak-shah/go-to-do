@@ -1,12 +1,23 @@
 package main
 
 import (
+	"gotodo/db"
+	"gotodo/initializers"
 	"gotodo/routes"
 
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	// Load Environment
+	initializers.LoadEnv()
+
+	// Connect to Postgres Instance
+	db.AttachInstance()
+}
+
 func main() {
+	// Set up Routing
 	router := gin.Default()
 
 	api := router.Group("/api")
@@ -25,5 +36,6 @@ func main() {
 
 	v1.PATCH("/edit/:id", routes.Edit)
 
+	// Start Server
 	router.Run("localhost:9000")
 }

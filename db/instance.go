@@ -1,12 +1,30 @@
 package db
 
 import (
+	"fmt"
+	"log"
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func GetInstance() (*gorm.DB, error) {
-	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	return db, err
+var Instance *gorm.DB
+
+func AttachInstance() *gorm.DB {
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable",
+		os.Getenv("POSTGRES_SERVER"),
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASS"),
+		os.Getenv("POSTGRES_DBNAME"),
+	)
+
+	Instance, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return Instance
 }

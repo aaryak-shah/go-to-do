@@ -29,14 +29,15 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
-	user := models.User{UID: uid, Email: body.Email, Password: string(passwordHash)}
-
-	checkExisting := db.Instance.Where("email = ?", user.Email).First(&user)
+	user := models.User{}
+	checkExisting := db.Instance.Where("email = ?", body.Email).First(&user)
+	fmt.Printf("CHECKEXISTING %#v", checkExisting)
 	if checkExisting.RowsAffected > 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("User with email %s alerady exists.", user.Email)})
 		return
 	}
 
+	user = models.User{UID: uid, Email: body.Email, Password: string(passwordHash)}
 	result := db.Instance.Create(&user)
 	if result.Error != nil {
 		ctx.Status(http.StatusBadRequest)
@@ -61,13 +62,6 @@ func Login(ctx *gin.Context) {
 		Password string
 	}
 	ctx.Bind(&body)
-
-	// passwordHash, hashErr := bcrypt.GenerateFromPassword([]byte(body.Password), 0)
-	// if hashErr != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to register. Try again later."})
-	// 	fmt.Println(hashErr)
-	// 	return
-	// }
 
 	user := models.User{Email: body.Email}
 	findUser := db.Instance.Where("email = ?", body.Email).First(&user)
@@ -94,9 +88,33 @@ func Login(ctx *gin.Context) {
 		return
 	}
 	ctx.SetCookie("auth", authTokenStr, 3600*24*30, "/", os.Getenv("TARGET_HOST"), false, false)
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Logged in successfully."})
+	ctx.JSON(http.StatusCreated, gin.H{
+		"email": user.Email,
+		"uid":   user.UID,
+	})
 }
 
 func Logout(ctx *gin.Context) {
 	ctx.SetCookie("auth", "", -1, "/", os.Getenv("TARGET_HOST"), false, false)
+}
+
+func CheckAuth(ctx *gin.Context) {
+	type JWTClaims struct {
+		Email string
+		Uid   string
+		jwt.RegisteredClaims
+	}
+
+	cookie, err := ctx.Cookie("auth")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Cookies not sent. Try again with cookies enabled."})
+		return
+	}
+
+	token, err := jwt.ParseWithClaims(cookie, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) { return []byte(os.Getenv("JWT_SECRET")), nil })
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Try again later."})
+		return
+	}
+
 }

@@ -1,46 +1,120 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import Counter from './lib/Counter.svelte'
+    import { user } from "./stores/user";
+    import { notif } from "./stores/notif";
+    import Auth from "./components/Auth.svelte";
+    import ToDos from "./components/ToDos.svelte";
+    import { login, logout } from "./requests/auth";
+    import { onMount } from "svelte/internal";
+    import Notif from "./components/Notif.svelte";
+
+    // onMount(async () => {
+    //     try {
+    //         let result = await login();
+    //         user.set({ email: result.email });
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // });
+
+    const logoutAction = async () => {
+        try {
+            await logout();
+            user.set({ email: undefined });
+        } catch (err) {
+            console.error(err);
+        }
+    };
 </script>
 
+<div class="banner" />
+<div class="notifarea {$notif.content === '' ? 'hide' : 'show'}">
+    {#key $notif.content}
+        <!-- {#if $notif.content !== ""} -->
+        <Notif context={$notif.context} content={$notif.content} />
+        <!-- {/if} -->
+    {/key}
+</div>
 <main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer"> 
-      <img src="/vite.svg" class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer"> 
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+    <div class="header">
+        <div class="left">
+            <h1>GoToDo</h1>
+            <div class="subtitle">Get Stuff Done</div>
+        </div>
+        {#if $user.email !== undefined}
+            <div class="right">
+                <h3 class="user">{$user.email}</h3>
+                <div
+                    class="logout"
+                    on:click={logoutAction}
+                    on:keypress={undefined}
+                >
+                    Log out
+                </div>
+            </div>
+        {/if}
+    </div>
+    {#if $user.email === undefined}
+        <Auth />
+    {:else}
+        <ToDos />
+    {/if}
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
+    main {
+        padding: 0px 25% 160px 25%;
+    }
+
+    .header {
+        margin-top: 160px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    h1 {
+        /* margin-top: 160px; */
+        margin-bottom: 0px;
+    }
+
+    h3 {
+        margin-bottom: 0;
+    }
+
+    .right {
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+    }
+
+    .logout {
+        text-transform: uppercase;
+        margin-bottom: 15px;
+    }
+    .logout:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .subtitle {
+        text-transform: uppercase;
+        /* font-weight: bold; */
+        /* color: grey; */
+        margin-bottom: 15px;
+    }
+
+    .banner {
+        background-color: lightcoral;
+        height: 480px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        border-bottom: 2px solid black;
+    }
+
+    .hide {
+        display: none;
+    }
 </style>

@@ -21,7 +21,7 @@ A basic, but complete to-do list web application written in golang.
 ## API
 
 ```
-> /api/v1/          (GET)   ->  Online Check
+> /api/v1/          (GET)   ->  Online check
     > auth/         (NIL)   <-  404
         register/   (POST)  ->  Register user
         login/      (POST)  ->  Login user
@@ -29,5 +29,5 @@ A basic, but complete to-do list web application written in golang.
     create/         (POST)  ->  Create a todo list
     edit/           (PATCH) ->  Modify a todo list
     > view/         (GET)   ->  View all todo lists belonging to user
-        :id/        (GET)   ->  View todo list with <id>
+        :id/        (GET)   ->  View todo list having <id>
 ```

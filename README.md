@@ -4,6 +4,21 @@ A basic, but complete to-do list web application written in golang.
 
 > Learning project to understand Go, Gin and GORM
 
+## How To Run
+
+### Backend
+
+```sh
+go run server.go
+```
+
+### Frontend
+
+```sh
+cd client
+npm run dev
+```
+
 ## Project Structure
 
 ```sh

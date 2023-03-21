@@ -99,22 +99,17 @@ func Logout(ctx *gin.Context) {
 }
 
 func CheckAuth(ctx *gin.Context) {
-	type JWTClaims struct {
-		Email string
-		Uid   string
-		jwt.RegisteredClaims
-	}
-
-	cookie, err := ctx.Cookie("auth")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Cookies not sent. Try again with cookies enabled."})
+	cookie, cookieErr := ctx.Cookie("auth")
+	if cookieErr != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not logged in."})
 		return
 	}
 
-	token, err := jwt.ParseWithClaims(cookie, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) { return []byte(os.Getenv("JWT_SECRET")), nil })
-	if err != nil {
+	claims := jwt.MapClaims{}
+	_, parsingErr := jwt.ParseWithClaims(cookie, claims, func(token *jwt.Token) (interface{}, error) { return []byte(os.Getenv("JWT_SECRET")), nil })
+	if parsingErr != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Try again later."})
 		return
 	}
-
+	ctx.JSON(http.StatusOK, gin.H{"email": claims["email"]})
 }

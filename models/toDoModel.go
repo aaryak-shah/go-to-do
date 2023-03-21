@@ -7,4 +7,5 @@ type ToDo struct {
 	ToDoID string `gorm:"primaryKey"`
 	Title  string
 	UID    string
+	Items  []Item `gorm:"foreignKey:ToDoID"`
 }

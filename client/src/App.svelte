@@ -1,20 +1,26 @@
 <script>
     import { user } from "./stores/user";
     import { notif } from "./stores/notif";
+    import { check, logout } from "./requests/auth";
+    import { onMount } from "svelte/internal";
+
     import Auth from "./components/Auth.svelte";
     import ToDos from "./components/ToDos.svelte";
-    import { login, logout } from "./requests/auth";
-    import { onMount } from "svelte/internal";
     import Notif from "./components/Notif.svelte";
+    import { viewAllToDos } from "./requests/todos";
 
-    // onMount(async () => {
-    //     try {
-    //         let result = await login();
-    //         user.set({ email: result.email });
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // });
+    let loaded = false;
+
+    onMount(async () => {
+        try {
+            let result = await check();
+            user.set({ email: result.email });
+            loaded = true;
+        } catch (err) {
+            console.error(err);
+            loaded = true;
+        }
+    });
 
     const logoutAction = async () => {
         try {
@@ -24,6 +30,21 @@
             console.error(err);
         }
     };
+
+    user.subscribe(async (val) => {
+        if (val !== undefined && val.email !== "") {
+            try {
+                let toDos = await viewAllToDos();
+                console.log(toDos);
+            } catch (err) {
+                // console.error(err);
+                notif.set({
+                    context: "error",
+                    content: err.response?.data.error,
+                });
+            }
+        }
+    });
 </script>
 
 <div class="banner" />
@@ -34,10 +55,10 @@
         <!-- {/if} -->
     {/key}
 </div>
-<main>
+<main class={loaded ? "show" : "hide"}>
     <div class="header">
         <div class="left">
-            <h1>GoToDo</h1>
+            <h1 class="logo">GoToDo</h1>
             <div class="subtitle">Get Stuff Done</div>
         </div>
         {#if $user.email !== undefined}

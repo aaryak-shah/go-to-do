@@ -31,3 +31,14 @@ export const logout = async () => {
         throw err
     }
 }
+
+export const check = async () => {
+    const url = "/auth/check"
+    try {
+        const result = await axios.get(url)
+        return result.data
+    } catch (err) {
+        console.error(err);
+        throw err
+    }
+}

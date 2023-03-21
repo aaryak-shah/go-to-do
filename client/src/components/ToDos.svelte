@@ -1,4 +1,5 @@
 <script>
+    import { todos } from "../stores/todos";
     import ToDoCard from "./ToDoCard.svelte";
 </script>
 
@@ -8,13 +9,9 @@
             <div class="add">+</div>
             <div class="label">NEW TODO LIST</div>
         </div>
-        <ToDoCard />
-        <ToDoCard />
-        <ToDoCard />
-        <ToDoCard />
-        <ToDoCard />
-        <ToDoCard />
-        <ToDoCard />
+        {#each $todos as todo, idx}
+            <ToDoCard id={todo.id} {idx} />
+        {/each}
     </div>
 </main>
 

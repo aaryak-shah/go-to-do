@@ -3,6 +3,7 @@ package main
 import (
 	"gotodo/db"
 	"gotodo/initializers"
+	"gotodo/mw"
 	"gotodo/routes"
 	"net/http"
 
@@ -22,12 +23,13 @@ func main() {
 	// Set up Routing
 	router := gin.Default()
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:9000", "http://localhost:5173"},
+	corsPolicy := cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PATCH"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "User-Agent"},
 		AllowCredentials: true,
-	}))
+	}
+	router.Use(cors.New(corsPolicy))
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")
@@ -39,13 +41,18 @@ func main() {
 	auth.GET("/logout", routes.Logout)
 	auth.GET("/check", routes.CheckAuth)
 
-	v1.POST("/create", routes.Create)
+	create := v1.Group("/create")
+	create.Use(mw.Bouncer())
+	create.POST("/", routes.Create)
 
 	view := v1.Group("/view")
+	view.Use(mw.Bouncer())
 	view.GET("/", routes.ViewAll)
 	view.GET("/:id", routes.ViewId)
 
-	v1.PATCH("/edit/:id", routes.Edit)
+	edit := v1.Group("/edit")
+	edit.Use(mw.Bouncer())
+	edit.PATCH("/:id", routes.Edit)
 
 	// Start Server
 	router.Run("localhost:9000")

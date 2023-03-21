@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gotodo/db"
 	"log"
 	"os"
 
@@ -46,7 +45,7 @@ func init() {
 	AttachInstance()
 }
 
-func main() {
-	result := db.Instance.Where("email = ?", user.Email).First(&user)
-	fmt.Printf("Result: %#v", result)
-}
+// func main() {
+// 	result := db.Instance.Where("email = ?", user.Email).First(&user)
+// 	fmt.Printf("Result: %#v", result)
+// }

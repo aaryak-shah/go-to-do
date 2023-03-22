@@ -1,4 +1,5 @@
 <script>
+    import { selectedCard } from "../../stores/selected";
     import { todos } from "../../stores/todos";
 
     export let idx;
@@ -8,18 +9,31 @@
             { completed: false, name: "" },
             ...$todos[idx].items,
         ];
+        // @ts-ignore
+        document.querySelector("input.name").focus();
     };
 
-    const deleteItem = (idx) => {};
+    const deleteItem = (iidx) => {
+        let temp = $todos[idx].items;
+        temp.splice(iidx, 1);
+        $todos[idx].items = temp;
+    };
+
+    const deleteList = () => {
+        $todos[idx].deleted = true;
+        selectedCard.set("");
+    };
 </script>
 
 <main class="items">
-    <div class="delete-todo-btn">&times; Delete List</div>
+    <button class="delete-todo-btn" on:click={deleteList}>
+        &times; Delete List
+    </button>
     <div class="new-item-btn item" on:click={newItem} on:keypress={undefined}>
         <div class="new-icon">+</div>
         <div class="new-text">Add a new item</div>
     </div>
-    {#each $todos[idx].items as item}
+    {#each $todos[idx].items as item, iidx}
         <div id="1" class="item">
             <label class="checkbox-wrapper">
                 <span class="checkbox-display" data-checked={item.completed}>
@@ -31,7 +45,13 @@
                 </span>
             </label>
             <input class="name done-{item.completed}" bind:value={item.name} />
-            <div class="delete-item-btn">&times;</div>
+            <div
+                class="delete-item-btn"
+                on:click={() => deleteItem(iidx)}
+                on:keypress={undefined}
+            >
+                &times;
+            </div>
         </div>
     {/each}
 </main>

@@ -1,9 +1,9 @@
 <script>
     import { selectedCard } from "../stores/selected";
+    import { todos } from "../stores/todos";
+
     import CardItems from "./items/CardItems.svelte";
     import CardEditableItems from "./items/CardEditableItems.svelte";
-
-    import { todos } from "../stores/todos";
 
     export let id;
     export let idx;
@@ -21,7 +21,7 @@
     };
 </script>
 
-<main {id}>
+<main class={$todos[idx].deleted ? "hide" : "show"} {id}>
     <div class="backdrop expanded-{$selectedCard === id}" />
     {#if $selectedCard === id}
         <div class="close" on:click={closeAction} on:keypress={undefined}>
@@ -34,25 +34,39 @@
         on:keypress={undefined}
     >
         <h6>#{id}</h6>
-        <h2>{$todos[idx].title}</h2>
+        {#if $selectedCard === id}
+            <input
+                type="text"
+                class="todo-title"
+                bind:value={$todos[idx].title}
+                placeholder="ToDo Title"
+            />
+        {:else}
+            <h2>{$todos[idx].title}</h2>
+        {/if}
+
         {#if $selectedCard === id}
             <CardEditableItems {idx} />
         {:else}
             <CardItems {idx} />
         {/if}
         <!-- {#each todo.items.slice(0, 5) as item}
-                <div id="1" class="item">
-                    <div class="checkbox done_{item.completed}" />
-                    <div class="name done_{item.completed}">{item.name}</div>
-                </div>
-            {/each}
-            {#if todo.items.length > 5}
-                <div class="extra">. . .</div>
-            {/if} -->
+                    <div id="1" class="item">
+                        <div class="checkbox done_{item.completed}" />
+                        <div class="name done_{item.completed}">{item.name}</div>
+                    </div>
+                {/each}
+                {#if todo.items.length > 5}
+                    <div class="extra">. . .</div>
+                {/if} -->
     </div>
 </main>
 
 <style>
+    main {
+        display: flex;
+    }
+
     .backdrop {
         height: 0vh;
         width: 100vw;
@@ -72,8 +86,9 @@
         padding: 10% 7%;
         box-shadow: 2px 2px 0 0px black;
         min-height: 175px;
-
         transition: box-shadow 0.2s ease-in-out;
+
+        width: 100%;
     }
     .card:hover {
         background-color: rgb(255, 255, 97);
@@ -92,6 +107,7 @@
 
         padding: 5%;
         overflow-y: auto;
+        width: auto;
     }
     .expanded-true.card:hover {
         background-color: white;
@@ -127,5 +143,24 @@
     }
     h2 {
         margin-top: 0;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .todo-title {
+        outline: none;
+        border: none;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 900;
+        font-size: 60px;
+        width: 100%;
+        padding-block: 10px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+    .todo-title:hover {
+        border-bottom: 1px solid black;
     }
 </style>

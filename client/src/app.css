@@ -4,7 +4,32 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-h1, h2, h3 {
+/* ::-webkit-scrollbar {
+    width: 15px;
+    background: none;
+}
+
+::-webkit-scrollbar-track {
+    background: none;
+    margin: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 8px;
+    border: 2px solid black;
+    border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    width: 8px;
+    border: 2px solid black;
+    border-radius: 100px;
+    background-color: black;
+} */
+
+h1,
+h2,
+h3 {
     font-weight: 900;
 }
 
